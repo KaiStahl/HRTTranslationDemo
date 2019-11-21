@@ -46,8 +46,25 @@ function main(params) {
 
       // in case of errors during the call resolve with an error message according to the pattern 
       // found in the catch clause below
+		identify(params, [callback()])
+	  
+		const LanguageTranslatorV3 = require('ibm-watson/language-translator/v3');
+		const { IamAuthenticator } = require('ibm-watson/auth');
 
-      resolve({
+		const languageTranslator = new LanguageTranslatorV3({
+			version: '2018-05-01',
+			authenticator: new IamAuthenticator({
+			apikey: '{apikey}',
+		}),
+		url: '{url}',
+		});
+
+		const identifyParams = {
+			text: 'Language translator translates text from one language to another'
+		};
+
+		languageTranslator.identify(identifyParams).then(identifiedLanguages => {console.log(JSON.stringify(identifiedLanguages));
+			resolve({
         statusCode: 200,
         body: {
           text: params.text, 
@@ -56,11 +73,14 @@ function main(params) {
         },
         headers: { 'Content-Type': 'application/json' }
       });
-
-
-    } catch (err) {
-      console.error('Error while initializing the AI service', err);
-      resolve(getTheErrorResponse('Error while communicating with the language service', defaultLanguage));
+		})
+		.catch(err => {
+			catch (err) {
+			console.error('Error while initializing the AI service', err);
+			resolve(getTheErrorResponse('Error while communicating with the language service', defaultLanguage));
     }
+		console.log('error:', err);
+		});
+	} 
   });
 }
